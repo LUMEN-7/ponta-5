@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useLayoutEffect, useRef, useState } from 'react';
 
 function getGameValues(sel, setSel, played, chosenSide) {
     const L = played.reduce((v,p) => p.side === 'Esquerda' ? p.outer : v, 6);
@@ -75,13 +75,39 @@ function getGameValues(sel, setSel, played, chosenSide) {
 
 export default function App() {
   const [sel, setSel] = useState('6-1');
+  const flightOrigin = useRef(null);
+  const flightSequence = useRef(0);
+  const [flying, setFlying] = useState(false);
   const [played, setPlayed] = useState([]);
   const [chosenSide, setChosenSide] = useState('Esquerda');
   const [feedback, setFeedback] = useState(null);
   const { leftEnd, rightEnd, curSum, curLabel, board, hand, opps, options, hasOptions, noOptions, selLabel, leftGhost, rightGhost, ctaCls } = getGameValues(sel, setSel, played, chosenSide);
   const selectedOption = options.find(o => o.side === chosenSide) || options[0];
+  useLayoutEffect(() => {
+    const origin = flightOrigin.current;
+    if (!origin || !played.length) return;
+    flightOrigin.current = null;
+    const target = document.querySelector(`[data-placed-id="${origin.id}"]`);
+    if (!target) { setFlying(false); return; }
+    const end = target.getBoundingClientRect();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { setFlying(false); return; }
+    target.getAnimations().forEach(animation => animation.cancel());
+    const dx = origin.rect.left + origin.rect.width / 2 - (end.left + end.width / 2);
+    const dy = origin.rect.top + origin.rect.height / 2 - (end.top + end.height / 2);
+    const sx = origin.rect.width / end.width;
+    const sy = origin.rect.height / end.height;
+    const animation = target.animate([
+      {transform:`translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`, filter:'drop-shadow(0 16px 15px rgba(0,0,0,.3))', offset:0},
+      {transform:'translate(0, -7px) scale(1.045)',offset:.83},
+      {transform:'translate(0, 0) scale(1)',filter:'drop-shadow(0 0 0 transparent)',offset:1}
+    ], {duration:750,easing:'cubic-bezier(.22,.8,.25,1)',fill:'both'});
+    animation.finished.catch(() => {}).then(() => {animation.cancel();setFlying(false);});
+  }, [played]);
   const playPiece = () => {
-    if (!selectedOption || feedback) return;
+    if (!selectedOption || feedback || flying) return;
+    const source = document.querySelector(`[data-hand-id="${sel}"]`);
+    if (source) flightOrigin.current = {id:sel,rect:source.getBoundingClientRect()};
+    setFlying(true);
     const [a,b] = sel.split('-').map(Number);
     const outer = selectedOption.side === 'Esquerda' ? (a === leftEnd ? b : a) : (a === rightEnd ? b : a);
     setPlayed(prev => [...prev, {id:sel,a,b,outer,side:selectedOption.side,pts:selectedOption.pts}]);
@@ -90,7 +116,7 @@ export default function App() {
     setSel(remaining[0] || '');
     setChosenSide('Esquerda');
   };
-  const resetDemo = () => {setPlayed([]);setSel('6-1');setChosenSide('Esquerda');setFeedback(null);};
+  const resetDemo = () => {flightOrigin.current = null;setFlying(false);setPlayed([]);setSel('6-1');setChosenSide('Esquerda');setFeedback(null);};
   const myScore = 18 + played.reduce((sum,p) => sum + p.pts,0);
   return (<div style={{"minHeight":"900px","display":"flex","flexDirection":"column","background":"#14090c","color":"#f6ecd2","fontFamily":"'DM Sans',system-ui,sans-serif","fontSize":"16px","lineHeight":"1.4"}}>
 
@@ -105,7 +131,7 @@ export default function App() {
       <span style={{"fontSize":"20px","fontWeight":"700","color":"#e2b54a"}}>Ponta de Cinco</span>
     </div>
     <div style={{"display":"flex","alignItems":"center","gap":"16px","flexWrap":"wrap"}}>
-      <span className="muted">Rodada 3 · Meta de 50 pontos</span>
+      <div className="round-status"><span className="round-kicker">PARTIDA EM ANDAMENTO</span><strong>Rodada <span>03</span></strong><span className="round-goal">Meta · 50 pontos</span></div>
       <button type="button" className="ghostbtn">Regras</button>
       <button type="button" className="ghostbtn" onClick={resetDemo}>Reiniciar demo</button>
     </div>
@@ -115,16 +141,12 @@ export default function App() {
 
     <section style={{"flex":"999 1 640px","minWidth":"0","display":"flex","flexDirection":"column","gap":"16px"}}>
 
-      <div className="panel players-panel" style={{"padding":"16px 24px","display":"flex","flexWrap":"wrap","gap":"16px 32px"}}>
-        {opps.map((o, oIndex) => <Fragment key={oIndex}>
-          <div style={{"display":"flex","alignItems":"center","gap":"16px"}}>
-            <div className={`av ${o.team} ${o.name === "Bia" ? "partner" : ""}`}>{o.init}</div>
-            <div>
-              <div style={{"fontWeight":"500"}}>{o.name}</div>
-              <div className="muted">{o.count} peças</div>
-            </div>
-          </div>
-        </Fragment>)}
+      <div className="players-grid" aria-label="Jogadores da partida">
+        {opps.map((o) => <div className={`player-card ${o.team}`} key={o.name}>
+          <div className={`av ${o.team} ${o.name === "Bia" ? "partner" : ""}`}>{o.init}</div>
+          <div className="player-details"><strong>{o.name}</strong><span>{o.count} peças</span></div>
+          <span className="player-team">{o.team === "us" ? "Sua dupla" : "Adversário"}</span>
+        </div>)}
       </div>
 
       <div className="game-table" style={{"flex":"1","minHeight":"360px","background":"radial-gradient(ellipse at center,#15774b 0%,#0b4a2e 78%)","border":"10px solid #3a1d12","borderRadius":"24px","padding":"24px","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center","gap":"32px","boxShadow":"inset 0 0 0 2px #d4a548,inset 0 0 70px rgba(0,0,0,.35),0 16px 32px rgba(0,0,0,.5)"}}>
@@ -145,7 +167,7 @@ export default function App() {
               <div className={`ghost ${leftGhost.cls}`} aria-label="Encaixe disponível à esquerda">{leftGhost.label}</div>
             </>}
             {board.map((t, tIndex) => <Fragment key={tIndex}>
-              <div className={t.cls} role="img" aria-label={t.label}>
+              <div className={t.cls.replace(" placed", "")} data-placed-id={played.some(p => p.id === t.id) ? t.id : undefined} role="img" aria-label={t.label}>
                 <div className="half">{t.pa.map((c, cIndex) => <Fragment key={cIndex}><div className="cell">{c.on && <><i className="pip"></i></>}</div></Fragment>)}</div>
                 <div className="divider"></div>
                 <div className="half">{t.pb.map((c, cIndex) => <Fragment key={cIndex}><div className="cell">{c.on && <><i className="pip"></i></>}</div></Fragment>)}</div>
@@ -166,7 +188,7 @@ export default function App() {
           </div>
           <div style={{"display":"flex","flexWrap":"wrap","gap":"16px","alignItems":"flex-end","paddingTop":"32px"}}>
             {hand.map((t, tIndex) => <Fragment key={tIndex}>
-              <button type="button" className={t.cls} onClick={t.pick} aria-label={t.label} aria-pressed={t.pressed}>
+              <button type="button" data-hand-id={t.id} className={t.cls} onClick={t.pick} aria-label={t.label} aria-pressed={t.pressed}>
                 <div className="half">{t.pa.map((c, cIndex) => <Fragment key={cIndex}><div className="cell">{c.on && <><i className="pip"></i></>}</div></Fragment>)}</div>
                 <div className="divider"></div>
                 <div className="half">{t.pb.map((c, cIndex) => <Fragment key={cIndex}><div className="cell">{c.on && <><i className="pip"></i></>}</div></Fragment>)}</div>
@@ -194,7 +216,7 @@ export default function App() {
             <div className="row"><span className="muted">Essa peça não encaixa nas pontas {leftEnd} e {rightEnd}.</span></div>
           </>}
           <div style={{"display":"flex","flexWrap":"wrap","gap":"16px"}}>
-            <button type="button" className={ctaCls} disabled={!selectedOption || !!feedback} onClick={playPiece}>Jogar peça</button>
+            <button type="button" className={ctaCls} disabled={!selectedOption || !!feedback || flying} onClick={playPiece}>Jogar peça</button>
             <button type="button" className="ghostbtn">Passar a vez</button>
           </div>
         </div>
@@ -202,22 +224,14 @@ export default function App() {
     </section>
 
     <aside style={{"flex":"1 1 300px","maxWidth":"360px","display":"flex","flexDirection":"column","gap":"16px"}}>
-      <div className="panel score-panel" style={{"display":"flex","flexDirection":"column","gap":"24px"}}>
-        <h2 className="h2">Placar</h2>
-        <div>
-          <div style={{"display":"flex","justifyContent":"space-between","alignItems":"baseline","marginBottom":"8px"}}>
-            <span style={{"fontWeight":"500"}}>Nós <span className="muted">· Você e Bia</span></span>
-            <span style={{"fontSize":"32px","fontWeight":"700","color":"#e2b54a"}}>{myScore}</span>
-          </div>
-          <div style={{"height":"8px","borderRadius":"8px","background":"rgba(246,236,210,.12)"}}><div style={{"width":`${Math.min(100,myScore / 50 * 100)}%`,"height":"100%","borderRadius":"8px","background":"#e2b54a"}}></div></div>
+      <div className="panel score-panel">
+        <div className="score-heading"><div><span className="score-eyebrow">DISPUTA ATUAL</span><h2 className="h2">Placar</h2></div><span className="score-target">Meta <b>50</b></span></div>
+        <div className="score-matchup">
+          <div className="score-team us"><span className="score-team-label">NÓS</span><strong className="score-number">{myScore}</strong><span className="score-members">Você + Bia</span></div>
+          <span className="score-versus">VS</span>
+          <div className="score-team them"><span className="score-team-label">ELES</span><strong className="score-number">14</strong><span className="score-members">Caio + Duda</span></div>
         </div>
-        <div>
-          <div style={{"display":"flex","justifyContent":"space-between","alignItems":"baseline","marginBottom":"8px"}}>
-            <span style={{"fontWeight":"500"}}>Eles <span className="muted">· Caio e Duda</span></span>
-            <span style={{"fontSize":"32px","fontWeight":"700","color":"#ff8a97"}}>14</span>
-          </div>
-          <div style={{"height":"8px","borderRadius":"8px","background":"rgba(246,236,210,.12)"}}><div style={{"width":"28%","height":"100%","borderRadius":"8px","background":"#ff8a97"}}></div></div>
-        </div>
+        <div className="score-race"><div className="score-race-track"><span className="score-race-us" style={{width:`${Math.min(100,myScore / 50 * 100)}%`}}></span><span className="score-race-them" style={{width:"28%"}}></span></div><div className="score-race-footer"><span>Progresso até a vitória</span><b>{Math.max(0,50 - myScore)} pontos restantes</b></div></div>
       </div>
 
       <div className="panel history-panel" style={{"flex":"1"}}>
