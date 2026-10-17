@@ -117,3 +117,20 @@ html,body,#root{height:100%;min-height:0;min-width:0;overflow:hidden}
 
 .rodape{border-top:0;justify-content:flex-end}
 
+
+/* Dicas contextuais, sem voltar aos cards de dashboard */
+.play-hints{max-width:560px;margin:12px auto 0;padding:12px 0 0;border-top:1px solid rgba(241,232,211,.16)}
+.hints-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:8px}
+.hints-head strong{font-size:13px;color:var(--marfim)}
+.hints-head>span{font-size:12px;color:var(--suave)}
+.hints-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.hint-option{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:center;text-align:left;cursor:pointer;color:var(--texto);background:rgba(0,0,0,.13);border:1px solid rgba(241,232,211,.18);border-radius:7px;padding:9px 12px}
+.hint-option:hover:not(:disabled){border-color:var(--latao);background:rgba(201,162,75,.09)}
+.hint-side{font-size:13px;font-weight:700}
+.hint-calc{font-size:11px;color:var(--suave);grid-column:1;grid-row:2}
+.hint-points{font-weight:700;color:var(--latao);font-size:13px;grid-column:2;grid-row:1/3}
+.hint-option:disabled{opacity:.38;cursor:not-allowed}
+.flying-domino{position:fixed;z-index:9999;pointer-events:none;transform-origin:center center;will-change:transform;display:flex;align-items:center;justify-content:center}
+.flying-domino .tile{margin:0}
+@media(max-width:700px){.play-hints{margin-top:6px;padding-top:8px}.hint-option{padding:7px 9px}.hints-options{gap:6px}.hint-calc{font-size:10px}}
+@media(max-width:360px){.hints-options{grid-template-columns:1fr}}
