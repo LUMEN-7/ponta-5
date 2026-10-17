@@ -185,3 +185,43 @@ button.tile:hover:not(.sel):not(.dim){transform:translateY(-7px);box-shadow:inse
 @media(max-width:700px){.players-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.player-card{padding:10px 8px;gap:7px;border-radius:12px}.player-card .av{width:28px;height:28px;font-size:12px}.player-details strong{font-size:13px}.player-details>span{font-size:10px}.round-status{flex-wrap:wrap;gap:5px 10px}.round-status .round-kicker{display:none}.round-goal{padding-left:9px}.score-panel{padding:16px!important}}
 @media(max-width:390px){.players-grid{grid-template-columns:1fr}.player-team{display:inline}.round-goal{font-size:11px}}
 @media(prefers-reduced-motion:reduce){.score-race-track>span{transition:none}}
+
+/* Ponta de Cinco — linguagem visual enxuta, sem dashboard */
+.round-status{background:none;border:0;padding:0;gap:8px;border-radius:0}
+.round-status .round-kicker{display:inline;font-size:11px;letter-spacing:.11em;max-width:none;color:#b9a883}
+.round-status strong{font-size:27px;line-height:1;color:#e2b54a;font-weight:700;font-variant-numeric:tabular-nums}
+.round-goal{font-size:12px;padding-left:10px;color:#b9a883}
+.players-grid{gap:10px}
+.player-card{background:#1b1115;border:1px solid rgba(246,236,210,.075);border-radius:12px;padding:13px 16px;box-shadow:none}
+.player-card.us{border-color:rgba(226,181,74,.24)}
+.player-card .av{width:35px;height:35px;font-size:14px;box-shadow:none}
+.player-details{gap:1px}
+.player-details strong{font-size:14px;font-weight:600}
+.player-details>span{font-size:12px}
+.score-panel{background:#1b1115;box-shadow:none;gap:22px!important;padding:23px!important}
+.score-heading{display:flex;align-items:center;justify-content:space-between}
+.score-heading .h2{font-size:17px}
+.score-target{font-size:12px;color:#a99a88}
+.score-simple{display:flex;flex-direction:column;gap:15px}
+.score-simple-team{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.score-simple-team>span{font-size:14px;color:#f6ecd2;font-weight:700}
+.score-simple-team small{display:block;font-size:11px;color:#b9a883;font-weight:400;margin-top:2px}
+.score-simple-team strong{font-size:43px;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums;color:#e2b54a}
+.score-simple-team.them strong{color:#ff8a97}
+.score-divider{height:1px;background:rgba(246,236,210,.09)}
+.score-progress{height:3px;background:rgba(246,236,210,.09);border-radius:10px;overflow:hidden}
+.score-progress span{display:block;height:100%;background:#e2b54a;transition:width .4s}
+.score-bottom{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#a99a88}
+.score-bottom span:last-child{color:#e2b54a}
+.history-panel{background:#1b1115;box-shadow:none}
+.history-panel .row{gap:12px}
+.history-panel .row>div{min-width:0}
+.history-panel .row>div>div:first-child{font-size:13px!important}
+.history-panel .row .muted{font-size:11px;line-height:1.5}
+.history-points{color:#e2b54a;font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;flex-shrink:0}
+.history-points.opponent{color:#ff8a97}
+.history-points.none{color:#877c71}
+.hand-panel{background:#1b1115;box-shadow:none}
+.play-option.active{background:rgba(226,181,74,.055);box-shadow:inset 2px 0 rgba(226,181,74,.75)}
+@media(max-width:700px){.round-status{flex-wrap:nowrap}.round-status .round-kicker{display:inline}.round-status strong{font-size:21px}.round-goal{font-size:11px}.player-card{padding:10px}.score-panel{padding:16px!important}}
+@media(max-width:390px){.players-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.player-card{padding:8px 6px;gap:5px}.player-card .av{width:25px;height:25px;font-size:11px}.player-details strong{font-size:12px}.player-details>span{font-size:10px}.round-goal{display:none}}
