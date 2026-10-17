@@ -134,3 +134,16 @@ button.tile:hover:not(.sel):not(.dim){transform:translateY(-7px);box-shadow:inse
 .ghostbtn:hover{background:rgba(246,236,210,.055);border-color:rgba(246,236,210,.48)}
 @media(max-width:700px){.game-table{border-radius:18px !important}.board-track{padding-block:18px !important}.turn-indicator{font-size:12px}}
 @media(prefers-reduced-motion:reduce){.turn-dot{animation:none}.tile,.cta,.ghostbtn{transition:none}}
+
+/* Resposta de jogada e seleção de extremidade */
+.game-table{overflow:visible}
+.game-table::after{border-radius:12px}
+.score-float{position:absolute;top:27%;left:50%;z-index:8;transform:translateX(-50%);font-weight:800;font-size:24px;white-space:nowrap;color:#f7d47b;text-shadow:0 4px 18px #102e20;pointer-events:none;animation:score-rise 1s ease-out forwards}
+@keyframes score-rise{0%{opacity:0;transform:translate(-50%,14px) scale(.85)}25%{opacity:1;transform:translate(-50%,-4px) scale(1.08)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-42px)}}
+.tile.placed{animation:tile-arrive .38s cubic-bezier(.2,.8,.3,1) both}
+@keyframes tile-arrive{from{opacity:.5;transform:translateY(26px) scale(.89)}to{opacity:1;transform:translateY(0) scale(1)}}
+.play-option{cursor:pointer;border-radius:8px;padding-inline:10px!important;transition:background .2s}
+.play-option:hover{background:rgba(226,181,74,.06)}
+.play-option.active{background:rgba(226,181,74,.10);box-shadow:inset 3px 0 #e2b54a}
+.cta:disabled{cursor:not-allowed;opacity:.5}
+@media(prefers-reduced-motion:reduce){.score-float,.tile.placed{animation:none}.score-float{position:static;transform:none;text-align:center}}
