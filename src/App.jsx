@@ -1,8 +1,8 @@
 import React, { Fragment, useState } from 'react';
 
-function getGameValues(sel, setSel) {
-    const L = 6;
-    const R = 4;
+function getGameValues(sel, setSel, played, chosenSide) {
+    const L = played.reduce((v,p) => p.side === 'Esquerda' ? p.outer : v, 6);
+    const R = played.reduce((v,p) => p.side === 'Direita' ? p.outer : v, 4);
     const layouts = { 0: [], 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
     const cells = (n) => [0, 1, 2, 3, 4, 5, 6, 7, 8].map((i) => ({ on: layouts[n].indexOf(i) >= 0 }));
     const mk = (a, b, vertical, extra) => ({
@@ -12,7 +12,7 @@ function getGameValues(sel, setSel) {
       pa: cells(a),
       pb: cells(b)
     });
-    const board = [[6, 2], [2, 5], [5, 5], [5, 6], [6, 6], [6, 4], [4, 4]].map((p) => mk(p[0], p[1], p[0] === p[1], ''));
+    const board = [...played.filter(p => p.side === 'Esquerda').reverse().map(p => mk(p.a,p.b,p.a === p.b,' placed')), ...[[6, 2], [2, 5], [5, 5], [5, 6], [6, 6], [6, 4], [4, 4]].map((p) => mk(p[0], p[1], p[0] === p[1], '')), ...played.filter(p => p.side === 'Direita').map(p => mk(p.a,p.b,p.a === p.b,' placed'))];
 
     const calc = (ends, sum) => (sum % 5 === 0 ? ends + ' = ' + sum + ' · ' + sum + ' ÷ 5 = ' + (sum / 5) : ends + ' = ' + sum + ' · não divide por 5');
     const optionsFor = (a, b) => {
@@ -33,7 +33,7 @@ function getGameValues(sel, setSel) {
     };
 
     
-    const hand = [[6, 1], [3, 6], [4, 0], [2, 3], [1, 5]].map((p) => {
+    const hand = [[6, 1], [3, 6], [4, 0], [2, 3], [1, 5]].filter(p => !played.some(v => v.id === p.join('-'))).map((p) => {
       const t = mk(p[0], p[1], true, ' big');
       const playable = optionsFor(p[0], p[1]).length > 0;
       t.cls = t.cls + (t.id === sel ? ' sel' : '') + (playable ? '' : ' dim');
@@ -42,8 +42,8 @@ function getGameValues(sel, setSel) {
       return t;
     });
 
-    const parts = sel.split('-');
-    const options = optionsFor(Number(parts[0]), Number(parts[1]));
+    const parts = sel ? sel.split('-') : [];
+    const options = parts.length === 2 ? optionsFor(Number(parts[0]), Number(parts[1])) : [];
     const ghost = (side) => {
       const o = options.filter((x) => x.side === side)[0];
       return o ? { on: true, label: o.ghost, cls: o.pts > 0 ? 'good' : '' } : { on: false, label: '', cls: '' };
@@ -59,14 +59,14 @@ function getGameValues(sel, setSel) {
       leftEnd: L,
       rightEnd: R,
       curSum: L + R,
-      curLabel: '+' + ((L + R) / 5) + ' pts',
+      curLabel: (L + R) % 5 === 0 ? '+' + ((L + R) / 5) + ' pts' : 'sem pontos',
       board: board,
       hand: hand,
       opps: opps,
       options: options,
       hasOptions: options.length > 0,
       noOptions: options.length === 0,
-      selLabel: parts[0] + '|' + parts[1],
+      selLabel: parts.length === 2 ? parts[0] + '|' + parts[1] : '—',
       leftGhost: ghost('Esquerda'),
       rightGhost: ghost('Direita'),
       ctaCls: options.length > 0 ? 'cta' : 'cta off'
@@ -75,7 +75,23 @@ function getGameValues(sel, setSel) {
 
 export default function App() {
   const [sel, setSel] = useState('6-1');
-  const { leftEnd, rightEnd, curSum, curLabel, board, hand, opps, options, hasOptions, noOptions, selLabel, leftGhost, rightGhost, ctaCls } = getGameValues(sel, setSel);
+  const [played, setPlayed] = useState([]);
+  const [chosenSide, setChosenSide] = useState('Esquerda');
+  const [feedback, setFeedback] = useState(null);
+  const { leftEnd, rightEnd, curSum, curLabel, board, hand, opps, options, hasOptions, noOptions, selLabel, leftGhost, rightGhost, ctaCls } = getGameValues(sel, setSel, played, chosenSide);
+  const selectedOption = options.find(o => o.side === chosenSide) || options[0];
+  const playPiece = () => {
+    if (!selectedOption || feedback) return;
+    const [a,b] = sel.split('-').map(Number);
+    const outer = selectedOption.side === 'Esquerda' ? (a === leftEnd ? b : a) : (a === rightEnd ? b : a);
+    setPlayed(prev => [...prev, {id:sel,a,b,outer,side:selectedOption.side,pts:selectedOption.pts}]);
+    setFeedback({pts:selectedOption.pts,side:selectedOption.side,id:sel});
+    const remaining = [[6,1],[3,6],[4,0],[2,3],[1,5]].map(p => p.join('-')).filter(id => id !== sel && !played.some(v => v.id === id));
+    setSel(remaining[0] || '');
+    setChosenSide('Esquerda');
+  };
+  const resetDemo = () => {setPlayed([]);setSel('6-1');setChosenSide('Esquerda');setFeedback(null);};
+  const myScore = 18 + played.reduce((sum,p) => sum + p.pts,0);
   return (<div style={{"minHeight":"900px","display":"flex","flexDirection":"column","background":"#14090c","color":"#f6ecd2","fontFamily":"'DM Sans',system-ui,sans-serif","fontSize":"16px","lineHeight":"1.4"}}>
 
   <header style={{"display":"flex","alignItems":"center","justifyContent":"space-between","gap":"16px","flexWrap":"wrap","padding":"16px 32px","borderBottom":"1px solid rgba(246,236,210,.1)"}}>
@@ -91,7 +107,7 @@ export default function App() {
     <div style={{"display":"flex","alignItems":"center","gap":"16px","flexWrap":"wrap"}}>
       <span className="muted">Rodada 3 · Meta de 50 pontos</span>
       <button type="button" className="ghostbtn">Regras</button>
-      <button type="button" className="ghostbtn">Sair da mesa</button>
+      <button type="button" className="ghostbtn" onClick={resetDemo}>Reiniciar demo</button>
     </div>
   </header>
 
@@ -122,6 +138,7 @@ export default function App() {
           <span className="badge good">{curLabel}</span>
         </div>
 
+        {feedback && <div key={feedback.id} className="score-float" onAnimationEnd={() => setFeedback(null)} role="status">{feedback.pts > 0 ? `+${feedback.pts} ${feedback.pts === 1 ? "ponto" : "pontos"}` : "Jogada realizada"}</div>}
         <div className="board-track" style={{"width":"100%","overflowX":"auto","padding":"16px 0"}}>
           <div style={{"display":"flex","alignItems":"center","justifyContent":"center","gap":"8px","minWidth":"max-content","margin":"0 auto"}}>
             {leftGhost.on && <>
@@ -163,7 +180,7 @@ export default function App() {
           {hasOptions && <>
             <div>
               {options.map((o, oIndex) => <Fragment key={oIndex}>
-                <div className="row">
+                <div className={`row play-option ${selectedOption?.side === o.side ? "active" : ""}`} onClick={() => setChosenSide(o.side)} role="button" tabIndex={0} onKeyDown={e => { if(e.key === "Enter" || e.key === " ") {e.preventDefault();setChosenSide(o.side)} }} aria-pressed={selectedOption?.side === o.side}>
                   <div>
                     <div style={{"fontWeight":"500"}}>{o.side}</div>
                     <div className="muted">{o.calc}</div>
@@ -177,7 +194,7 @@ export default function App() {
             <div className="row"><span className="muted">Essa peça não encaixa nas pontas {leftEnd} e {rightEnd}.</span></div>
           </>}
           <div style={{"display":"flex","flexWrap":"wrap","gap":"16px"}}>
-            <button type="button" className={ctaCls}>Jogar peça</button>
+            <button type="button" className={ctaCls} disabled={!selectedOption || !!feedback} onClick={playPiece}>Jogar peça</button>
             <button type="button" className="ghostbtn">Passar a vez</button>
           </div>
         </div>
@@ -190,9 +207,9 @@ export default function App() {
         <div>
           <div style={{"display":"flex","justifyContent":"space-between","alignItems":"baseline","marginBottom":"8px"}}>
             <span style={{"fontWeight":"500"}}>Nós <span className="muted">· Você e Bia</span></span>
-            <span style={{"fontSize":"32px","fontWeight":"700","color":"#e2b54a"}}>18</span>
+            <span style={{"fontSize":"32px","fontWeight":"700","color":"#e2b54a"}}>{myScore}</span>
           </div>
-          <div style={{"height":"8px","borderRadius":"8px","background":"rgba(246,236,210,.12)"}}><div style={{"width":"36%","height":"100%","borderRadius":"8px","background":"#e2b54a"}}></div></div>
+          <div style={{"height":"8px","borderRadius":"8px","background":"rgba(246,236,210,.12)"}}><div style={{"width":`${Math.min(100,myScore / 50 * 100)}%`,"height":"100%","borderRadius":"8px","background":"#e2b54a"}}></div></div>
         </div>
         <div>
           <div style={{"display":"flex","justifyContent":"space-between","alignItems":"baseline","marginBottom":"8px"}}>
@@ -205,6 +222,7 @@ export default function App() {
 
       <div className="panel history-panel" style={{"flex":"1"}}>
         <h2 className="h2" style={{"marginBottom":"8px"}}>Últimas jogadas</h2>
+        {played.slice().reverse().map((p,i) => <div className="row" key={p.id + i}><div><div style={{"fontWeight":"500"}}>Você jogou {p.a}|{p.b}</div><div className="muted">{p.side} · Demonstração</div></div><span className={p.pts ? "badge good" : "badge none"}>{p.pts ? `+${p.pts} Nós` : "sem ponto"}</span></div>)}
         <div className="row">
           <div>
             <div style={{"fontWeight":"500"}}>Duda jogou 4|4</div>
