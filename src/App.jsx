@@ -5,8 +5,8 @@ function Tile({t}){return <div className="tile">{t.map((n,i)=><div className="ha
 function Slot({t,id}){return <div className={'slot '+(t[0]===t[1]?'dbl':'')} data-target={id}><Tile t={t}/></div>}
 function ends(c){let l=c[0],r=c[c.length-1];return {L:l[0],R:r[1],sum:(l[0]===l[1]?2*l[0]:l[0])+(r[0]===r[1]?2*r[1]:r[1])}}
 function attempt(chain,t,side){let e=ends(chain),m=side==='L'?e.L:e.R,n;if(t[0]===m)n=side==='L'?[t[1],t[0]]:[t[0],t[1]];else if(t[1]===m)n=side==='L'?[t[0],t[1]]:[t[1],t[0]];else return null;let s=ends(side==='L'?[n,...chain]:[...chain,n]).sum;return {n,sum:s,pts:s%5===0?s/5:0}}
-function CoinIcon(){return <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="14" fill="#d3aa51"/><circle cx="16" cy="16" r="10.5" fill="#f2d27f" stroke="#956c2e" strokeWidth="1"/><text x="16" y="20" textAnchor="middle" fontSize="13" fontWeight="700" fill="#6f4a1a">5</text></svg>}
-function Seat({name,count,side}){const info=<div className="seat-info"><span className="n">{name}</span><small>{side==='bia'?'sua dupla · ':''}{count} peças</small></div>;const backs=<div className="back" aria-label={count+' peças'}>{Array.from({length:count},(_,i)=><span key={i}/>)}</div>;return <div className={'seat '+side}>{side==='bia'?<>{backs}{info}</>:<>{info}{backs}</>}</div>}
+function CoinIcon(){return <svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="#a3162a"/><circle cx="20" cy="20" r="16" fill="none" stroke="#f6ecd2" strokeWidth="3.5" strokeDasharray="6.28 6.28"/><circle cx="20" cy="20" r="11" fill="#1d1015" stroke="#e2b54a" strokeWidth="1.5"/>{[[16,16],[24,16],[20,20],[16,24],[24,24]].map(([x,y],i)=><circle key={i} cx={x} cy={y} r="1.7" fill="#f6ecd2"/>)}</svg>}
+function Seat({name,count,side}){const info=<div className="seat-info"><span className="n">{name}</span><small>{side==='bia'?'sua dupla · ':''}{count} peças</small></div>;const backs=<div className="back" aria-label={count+' peças'}>{Array.from({length:count},(_,i)=><span key={i}/>)}</div>;return <div className={'seat '+side}>{info}{backs}</div>}
 
 function TableViewport({children}) {
   const viewport = useRef(null);
