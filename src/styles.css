@@ -147,3 +147,41 @@ button.tile:hover:not(.sel):not(.dim){transform:translateY(-7px);box-shadow:inse
 .play-option.active{background:rgba(226,181,74,.10);box-shadow:inset 3px 0 #e2b54a}
 .cta:disabled{cursor:not-allowed;opacity:.5}
 @media(prefers-reduced-motion:reduce){.score-float,.tile.placed{animation:none}.score-float{position:static;transform:none;text-align:center}}
+
+/* Hierarquia do cabeçalho / cards individuais / placar */
+.round-status{display:flex;align-items:center;gap:12px;border:1px solid rgba(226,181,74,.3);background:linear-gradient(120deg,rgba(226,181,74,.13),rgba(226,181,74,.035));border-radius:12px;padding:8px 14px}
+.round-status .round-kicker{font-size:9px;letter-spacing:.12em;font-weight:800;color:#cbb778;max-width:82px;line-height:1.3}
+.round-status strong{white-space:nowrap;font-size:15px}
+.round-status strong span{font-size:21px;color:#e2b54a;margin-left:3px;font-variant-numeric:tabular-nums}
+.round-goal{font-size:12px;color:#c9b995;border-left:1px solid rgba(246,236,210,.15);padding-left:12px;white-space:nowrap}
+.players-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.player-card{min-width:0;display:flex;align-items:center;gap:12px;padding:15px 17px;border-radius:17px;background:linear-gradient(140deg,#28171c,#1b1015);border:1px solid rgba(246,236,210,.10)}
+.player-card.us{border-color:rgba(226,181,74,.24)}
+.player-details{display:flex;flex-direction:column;gap:2px;min-width:0}
+.player-details strong{font-size:15px;color:#f6ecd2}
+.player-details>span{font-size:12px;color:#b9a883}
+.player-team{margin-left:auto;font-size:10px;white-space:nowrap;color:#b9a883;background:rgba(246,236,210,.06);padding:5px 7px;border-radius:6px}
+.player-card.us .player-team{color:#e2b54a;background:rgba(226,181,74,.10)}
+.score-panel{gap:20px!important;padding:22px!important}
+.score-heading{display:flex;justify-content:space-between;align-items:center}
+.score-eyebrow{display:block;font-size:10px;letter-spacing:.16em;color:#b9a883;font-weight:700;margin-bottom:5px}
+.score-target{font-size:12px;color:#b9a883}.score-target b{color:#f6ecd2}
+.score-matchup{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px}
+.score-team{min-width:0;display:flex;flex-direction:column;gap:3px;padding:14px 10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.065);border-radius:12px;text-align:center}
+.score-team.us{background:rgba(226,181,74,.075);border-color:rgba(226,181,74,.18)}
+.score-team-label{font-size:10px;letter-spacing:.13em;font-weight:800;color:#cbb778}
+.score-team.them .score-team-label{color:#e89aa3}
+.score-number{font-size:40px;line-height:1.1;letter-spacing:-2px;color:#e2b54a;font-variant-numeric:tabular-nums}
+.score-team.them .score-number{color:#ff8a97}
+.score-members{font-size:11px;color:#b9a883;white-space:nowrap}
+.score-versus{font-size:10px;letter-spacing:.08em;color:#8e7a73;font-weight:800}
+.score-race-track{height:8px;background:rgba(246,236,210,.09);border-radius:20px;position:relative;margin:0 0 34px}
+.score-race-track>span{height:7px;position:absolute;left:0;top:0;border-radius:10px;transition:width .45s ease}
+.score-race-us{background:#e2b54a;transform:translateY(-6px)}
+.score-race-them{background:#ff8a97;transform:translateY(6px)}
+.score-race-footer{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:#b9a883}
+.score-race-footer b{color:#e2b54a;text-align:right}
+@media(max-width:1000px){.player-team{display:none}}
+@media(max-width:700px){.players-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.player-card{padding:10px 8px;gap:7px;border-radius:12px}.player-card .av{width:28px;height:28px;font-size:12px}.player-details strong{font-size:13px}.player-details>span{font-size:10px}.round-status{flex-wrap:wrap;gap:5px 10px}.round-status .round-kicker{display:none}.round-goal{padding-left:9px}.score-panel{padding:16px!important}}
+@media(max-width:390px){.players-grid{grid-template-columns:1fr}.player-team{display:inline}.round-goal{font-size:11px}}
+@media(prefers-reduced-motion:reduce){.score-race-track>span{transition:none}}
