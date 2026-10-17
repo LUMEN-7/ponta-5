@@ -48,8 +48,29 @@ export default function App(){
 const [chain,setChain]=useState(first),[hand,setHand]=useState(initialHand),[sel,setSel]=useState(null),[hov,setHov]=useState(null),[score,setScore]=useState(18),[hint,setHint]=useState('Passe o mouse numa peça para ver quanto ela vale.'),[float,setFloat]=useState(null),[last,setLast]=useState(null),[moving,setMoving]=useState(false);
 const source=useRef(null),current=sel||hov,e=ends(chain);
 const leftPreview=current&&attempt(chain,current,'L'),rightPreview=current&&attempt(chain,current,'R');
-useLayoutEffect(()=>{if(!source.current)return;let {rect,id}=source.current;source.current=null;let node=document.querySelector('[data-target="'+id+'"]');if(!node||matchMedia('(prefers-reduced-motion: reduce)').matches){setMoving(false);return}let b=node.getBoundingClientRect(),dx=rect.left+rect.width/2-b.left-b.width/2,dy=rect.top+rect.height/2-b.top-b.height/2;let anim=node.animate([{transform:'translate('+dx+'px,'+dy+'px) scale(.9)',opacity:.8},{transform:'translate(0,-7px) scale(1.04)',opacity:1,offset:.85},{transform:'translate(0,0) scale(1)',opacity:1}],{duration:700,easing:'cubic-bezier(.22,.8,.27,1)'});anim.finished.catch(()=>{}).then(()=>setMoving(false))},[chain]);
-function play(side,tile=sel){if(!tile||moving)return;let r=attempt(chain,tile,side);if(!r)return;let i=hand.indexOf(tile),button=document.querySelector('[data-hand="'+i+'"]'),id='placed-'+Date.now();if(button)source.current={rect:button.getBoundingClientRect(),id};setMoving(!!button);setChain(c=>side==='L'?[r.n,...c]:[...c,r.n]);setHand(h=>h.filter(t=>t!==tile));setSel(null);setHov(null);setLast({side,id});if(r.pts){setScore(s=>s+r.pts);setFloat({pts:r.pts,id})}setHint(r.pts?'Pontas somam '+r.sum+': +'+r.pts+' para sua dupla.':'Pontas somam '+r.sum+': sem pontos.')}
+useLayoutEffect(()=>{
+  if(!source.current)return;
+  const {rect,id,html}=source.current;source.current=null;
+  const target=document.querySelector('[data-target="'+id+'"]');
+  if(!target || window.matchMedia('(prefers-reduced-motion: reduce)').matches){setMoving(false);return}
+  const finish=()=>setMoving(false);
+  const dst=target.getBoundingClientRect();
+  // A peça voa numa camada acima da mesa, sem ser cortada pelo scroll do feltro.
+  const layer=document.createElement('div');
+  layer.className='flying-domino';
+  layer.style.cssText='left:'+rect.left+'px;top:'+rect.top+'px;width:'+rect.width+'px;height:'+rect.height+'px';
+  layer.innerHTML=html;
+  document.body.appendChild(layer);
+  target.style.visibility='hidden';
+  const animation=layer.animate([
+    {transform:'translate(0,0) scale(1)',offset:0},
+    {transform:'translate('+((dst.left+dst.width/2)-(rect.left+rect.width/2))*.72+'px,'+((dst.top+dst.height/2)-(rect.top+rect.height/2))*.72+'px) scale(.95)',offset:.65},
+    {transform:'translate('+(dst.left+dst.width/2-rect.left-rect.width/2)+'px,'+(dst.top+dst.height/2-rect.top-rect.height/2)+'px) scale(.88)',offset:1}
+  ],{duration:750,easing:'cubic-bezier(.24,.77,.3,1)',fill:'forwards'});
+  animation.finished.catch(()=>{}).then(()=>{target.style.visibility='';layer.remove();finish()});
+  return ()=>{animation.cancel();target.style.visibility='';layer.remove()}
+},[chain]);
+function play(side,tile=sel){if(!tile||moving)return;let r=attempt(chain,tile,side);if(!r)return;let i=hand.indexOf(tile),button=document.querySelector('[data-hand="'+i+'"]'),id='placed-'+Date.now();if(button)source.current={rect:button.getBoundingClientRect(),id,html:button.innerHTML};setMoving(!!button);setChain(c=>side==='L'?[r.n,...c]:[...c,r.n]);setHand(h=>h.filter(t=>t!==tile));setSel(null);setHov(null);setLast({side,id});if(r.pts){setScore(s=>s+r.pts);setFloat({pts:r.pts,id})}setHint(r.pts?'Pontas somam '+r.sum+': +'+r.pts+' para sua dupla.':'Pontas somam '+r.sum+': sem pontos.')}
 function reset(){source.current=null;setChain(first);setHand(initialHand);setSel(null);setHov(null);setScore(18);setFloat(null);setLast(null);setMoving(false);setHint('Passe o mouse numa peça para ver quanto ela vale.')}
 function ghost(side){let r=current&&attempt(chain,current,side);return r?<button className="ghost" type="button" disabled={moving} key={side} onClick={()=>play(side,current)} aria-label={'Jogar na ponta '+(side==='L'?'esquerda':'direita')}><Slot t={r.n}/><div className={'pts '+(r.pts?'':'zero')}>{r.pts?'+'+r.pts:'soma '+r.sum+', sem ponto'}</div></button>:null}
 return <main className="wrap"><header className="top"><h1>Ponta de Cinco</h1><div className="rodada"><small>Rodada</small><b>3</b></div><div className="placar"><div className="lado nos"><small>Nós</small><b>{score}</b></div><div className="barras"><div className="bar nos"><span style={{width:Math.min(score,50)*2+'%'}}/></div><div className="bar eles"><span style={{width:'28%'}}/></div><em>meta 50</em></div><div className="lado eles"><small>Eles</small><b>14</b></div></div><button className="rules" onClick={reset}>Reiniciar</button></header>
