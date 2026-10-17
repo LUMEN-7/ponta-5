@@ -204,3 +204,12 @@ body{font-family:'DM Sans',system-ui,sans-serif;font-weight:400;letter-spacing:0
 .mao button.no{filter:none;opacity:1}
 .ghost .pts{display:none}
 @media(max-width:700px){.seat.caio .seat-info,.seat.duda .seat-info{writing-mode:horizontal-tb;transform:none}}
+
+/* Ficha clássica de aposta e peças dos jogadores em marfim branco */
+.coin-badge{width:40px;height:40px;border-radius:50%;background:none;box-shadow:none}
+.coin-badge svg{width:40px;height:40px}
+.seat.bia{display:flex;flex-direction:column;align-items:center;gap:9px}
+.seat.bia .seat-info{order:0}
+.seat.bia .back{order:1;display:flex;justify-content:center}
+.back span{background:linear-gradient(145deg,#fff,#eeeae1);box-shadow:0 2px 0 #bdb8ad,0 3px 6px rgba(0,0,0,.32);border:1px solid #dedbd3}
+.back span::after{background:#a3162a}
