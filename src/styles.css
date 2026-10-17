@@ -180,3 +180,27 @@ body{font-family:'DM Sans',system-ui,sans-serif;font-weight:400;letter-spacing:0
 /* Reaproveita o mesmo acabamento opaco e pontos da mesa na peça em movimento. */
 .flying-domino .tile{background:linear-gradient(160deg,#fbf4e2 0%,var(--marfim) 45%,var(--marfim2) 100%);opacity:1}
 .flying-domino .half i{width:62%}
+
+/* Ajustes de identidade e interação da mão */
+:root{--marfim:#fff;--marfim2:#f1f1ee;--placar-nos:#f2f0eb;--placar-eles:#d9a18c}
+.brand{display:flex;align-items:center;gap:11px}
+.coin-badge{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 30% 30%,#f9e3a3,#c9993f 75%);box-shadow:inset 0 1px rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.26)}
+.coin-badge svg{width:25px;height:25px;display:block}
+.lado.nos b{color:var(--placar-nos)}
+.lado.eles b{color:var(--placar-eles)}
+.bar.nos span{background:#e4d9c7}
+.bar.eles span{background:#c78972}
+.seat-info{display:flex;flex-direction:column;align-items:center}
+.seat.bia .back{justify-content:center}
+.seat.bia .seat-info small{margin-top:4px}
+.seat.caio .seat-info,.seat.duda .seat-info{writing-mode:vertical-rl}
+.seat.caio .seat-info{transform:rotate(180deg)}
+.seat.caio .seat-info small,.seat.duda .seat-info small{margin:0;margin-block-start:5px}
+.tile,.mao button .tile,.flying-domino .tile{background:linear-gradient(160deg,#fff 0%,#fff 48%,#f1f1ee 100%);opacity:1}
+.mao{isolation:isolate}
+.mao button{position:relative;z-index:1}
+.mao button:hover,.mao button:focus-visible,.mao button.sel{z-index:40}
+.mao button:not(.no):hover .tile,.mao button.sel .tile{box-shadow:0 0 0 2px var(--latao),0 3px 0 #b4b4ac,0 14px 18px -4px rgba(0,0,0,.55)}
+.mao button.no{filter:none;opacity:1}
+.ghost .pts{display:none}
+@media(max-width:700px){.seat.caio .seat-info,.seat.duda .seat-info{writing-mode:horizontal-tb;transform:none}}
