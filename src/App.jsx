@@ -99,10 +99,10 @@ export default function App() {
 
     <section style={{"flex":"999 1 640px","minWidth":"0","display":"flex","flexDirection":"column","gap":"16px"}}>
 
-      <div className="panel" style={{"padding":"16px 24px","display":"flex","flexWrap":"wrap","gap":"16px 32px"}}>
+      <div className="panel players-panel" style={{"padding":"16px 24px","display":"flex","flexWrap":"wrap","gap":"16px 32px"}}>
         {opps.map((o, oIndex) => <Fragment key={oIndex}>
           <div style={{"display":"flex","alignItems":"center","gap":"16px"}}>
-            <div className={`av ${o.team}`}>{o.init}</div>
+            <div className={`av ${o.team} ${o.name === "Bia" ? "partner" : ""}`}>{o.init}</div>
             <div>
               <div style={{"fontWeight":"500"}}>{o.name}</div>
               <div className="muted">{o.count} peças</div>
@@ -111,8 +111,8 @@ export default function App() {
         </Fragment>)}
       </div>
 
-      <div style={{"flex":"1","minHeight":"360px","background":"radial-gradient(ellipse at center,#15774b 0%,#0b4a2e 78%)","border":"10px solid #3a1d12","borderRadius":"24px","padding":"24px","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center","gap":"32px","boxShadow":"inset 0 0 0 2px #d4a548,inset 0 0 70px rgba(0,0,0,.35),0 16px 32px rgba(0,0,0,.5)"}}>
-        <div style={{"display":"flex","alignItems":"center","flexWrap":"wrap","justifyContent":"center","gap":"8px","padding":"8px 16px","borderRadius":"8px","background":"rgba(20,9,12,.8)"}}>
+      <div className="game-table" style={{"flex":"1","minHeight":"360px","background":"radial-gradient(ellipse at center,#15774b 0%,#0b4a2e 78%)","border":"10px solid #3a1d12","borderRadius":"24px","padding":"24px","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center","gap":"32px","boxShadow":"inset 0 0 0 2px #d4a548,inset 0 0 70px rgba(0,0,0,.35),0 16px 32px rgba(0,0,0,.5)"}}>
+        <div className="table-score" style={{"display":"flex","alignItems":"center","flexWrap":"wrap","justifyContent":"center","gap":"8px","padding":"8px 16px","borderRadius":"8px","background":"rgba(20,9,12,.8)"}}>
           <span style={{"color":"#e9dcb4"}}>Pontas</span>
           <span style={{"width":"32px","height":"32px","borderRadius":"50%","background":"#f6efdc","color":"#1b1b19","fontWeight":"700","display":"flex","alignItems":"center","justifyContent":"center"}}>{leftEnd}</span>
           <span>+</span>
@@ -122,10 +122,10 @@ export default function App() {
           <span className="badge good">{curLabel}</span>
         </div>
 
-        <div style={{"width":"100%","overflowX":"auto","padding":"16px 0"}}>
+        <div className="board-track" style={{"width":"100%","overflowX":"auto","padding":"16px 0"}}>
           <div style={{"display":"flex","alignItems":"center","justifyContent":"center","gap":"8px","minWidth":"max-content","margin":"0 auto"}}>
             {leftGhost.on && <>
-              <div className={`ghost ${leftGhost.cls}`}>{leftGhost.label}</div>
+              <div className={`ghost ${leftGhost.cls}`} aria-label="Encaixe disponível à esquerda">{leftGhost.label}</div>
             </>}
             {board.map((t, tIndex) => <Fragment key={tIndex}>
               <div className={t.cls} role="img" aria-label={t.label}>
@@ -135,17 +135,17 @@ export default function App() {
               </div>
             </Fragment>)}
             {rightGhost.on && <>
-              <div className={`ghost ${rightGhost.cls}`}>{rightGhost.label}</div>
+              <div className={`ghost ${rightGhost.cls}`} aria-label="Encaixe disponível à direita">{rightGhost.label}</div>
             </>}
           </div>
         </div>
       </div>
 
-      <div className="panel" style={{"display":"flex","flexWrap":"wrap","gap":"24px 32px","alignItems":"flex-end"}}>
+      <div className="panel hand-panel" style={{"display":"flex","flexWrap":"wrap","gap":"24px 32px","alignItems":"flex-end"}}>
         <div style={{"flex":"1 1 420px","minWidth":"0"}}>
           <div style={{"display":"flex","alignItems":"center","gap":"16px"}}>
             <h2 className="h2">Sua mão</h2>
-            <span className="badge good">Sua vez</span>
+            <span className="turn-indicator"><span className="turn-dot" aria-hidden="true"></span>Sua vez</span>
           </div>
           <div style={{"display":"flex","flexWrap":"wrap","gap":"16px","alignItems":"flex-end","paddingTop":"32px"}}>
             {hand.map((t, tIndex) => <Fragment key={tIndex}>
@@ -185,7 +185,7 @@ export default function App() {
     </section>
 
     <aside style={{"flex":"1 1 300px","maxWidth":"360px","display":"flex","flexDirection":"column","gap":"16px"}}>
-      <div className="panel" style={{"display":"flex","flexDirection":"column","gap":"24px"}}>
+      <div className="panel score-panel" style={{"display":"flex","flexDirection":"column","gap":"24px"}}>
         <h2 className="h2">Placar</h2>
         <div>
           <div style={{"display":"flex","justifyContent":"space-between","alignItems":"baseline","marginBottom":"8px"}}>
@@ -203,7 +203,7 @@ export default function App() {
         </div>
       </div>
 
-      <div className="panel" style={{"flex":"1"}}>
+      <div className="panel history-panel" style={{"flex":"1"}}>
         <h2 className="h2" style={{"marginBottom":"8px"}}>Últimas jogadas</h2>
         <div className="row">
           <div>
