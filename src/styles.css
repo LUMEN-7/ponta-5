@@ -3,7 +3,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--noite);color:var(--texto);font:500 15px/1.4 'Work Sans',system-ui,sans-serif;min-width:320px;min-height:100vh}
 button{font:inherit}button:focus-visible{outline:2px solid var(--latao);outline-offset:4px}
-.wrap{max-width:1120px;margin:0 auto;padding:32px 28px}
+.wrap{max-width:1600px;margin:0 auto;padding:32px 28px}
 h1,.rodada b,.lado b,.pts,.flutua{font-family:'Alfa Slab One',Georgia,serif;font-weight:400}
 .top{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:32px}
 .top h1{font-size:24px;margin:0;color:var(--marfim);letter-spacing:.01em}
@@ -33,7 +33,7 @@ h1,.rodada b,.lado b,.pts,.flutua{font-family:'Alfa Slab One',Georgia,serif;font
 .back{display:flex;gap:3px}.caio .back,.duda .back{display:grid;grid-template-columns:repeat(3,14px)}
 .back span{width:14px;height:28px;border-radius:3px;background:linear-gradient(135deg,#5a3a26,#33200f);box-shadow:0 2px 0 #1a0f08;position:relative}
 .back span::after{content:'';position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px;border-radius:50%;background:var(--latao)}
-.cadeia{position:relative;display:flex;align-items:center;justify-content:safe center;gap:6px;padding:48px 36px;overflow-x:auto;width:100%;min-width:0;scrollbar-width:thin;scrollbar-color:rgba(201,162,75,.45) transparent}
+.cadeia{position:relative;display:flex;align-items:center;justify-content:safe center;gap:6px;padding:48px 36px;flex-wrap:wrap;row-gap:24px;width:100%;min-width:0}
 .slot{position:relative;flex:none;width:var(--h);height:var(--w)}.slot.dbl{width:var(--w);height:var(--h)}
 .ponta{position:relative;flex:none;display:flex;flex-direction:column;align-items:center;gap:6px}
 .chip{font:600 12px 'Work Sans',sans-serif;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,.45);color:var(--marfim);white-space:nowrap}
@@ -63,3 +63,57 @@ h1,.rodada b,.lado b,.pts,.flutua{font-family:'Alfa Slab One',Georgia,serif;font
 @media(max-width:700px){.arena{grid-template-columns:1fr 1fr;grid-template-areas:'bia bia' 'mesa mesa' 'caio duda';gap:16px}.seat.caio,.seat.duda{flex-direction:column;justify-content:center}.seat.caio>div:first-child,.seat.duda>div:first-child{writing-mode:horizontal-tb;transform:none}.seat.caio small,.seat.duda small{margin-block-start:3px}.caio .back,.duda .back{display:flex}.wrap{padding:20px 14px}.top{gap:18px;margin-bottom:24px}.rodada{padding-left:0;border-left:0}.placar{max-width:none;min-width:0;width:100%;margin-left:0;order:5}.rules{margin-left:auto}.feltro{min-height:330px}.cadeia{padding:42px 16px}.mao{margin-top:12px}}
 @media(max-width:420px){:root{--w:34px}.back span{width:11px;height:22px}.wrap{padding:18px 12px}.cadeia{padding-inline:8px}.rodape{align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* A tela permanece fixa; somente o interior da mesa pode ser navegado. */
+html,body,#root{height:100%;min-height:0;min-width:0;overflow:hidden}
+.wrap{height:100vh;height:100dvh;max-height:100vh;max-height:100dvh;display:flex;flex-direction:column;padding:16px 24px;overflow:hidden;--w:clamp(26px,min(4vw,6vh),50px)}
+.top{flex:none;gap:16px;margin-bottom:12px}
+.top h1{font-size:22px}
+.arena{flex:1;min-height:0;grid-template-columns:90px minmax(0,1fr) 90px;grid-template-rows:auto minmax(0,1fr);gap:12px;align-items:stretch}
+.seat{justify-content:center;gap:6px;min-width:0}
+.seat.bia{flex-direction:row;gap:16px}
+.seat.caio,.seat.duda{flex-direction:column}
+.seat.caio>div:first-child,.seat.duda>div:first-child{writing-mode:horizontal-tb;transform:none}
+.seat.caio .n,.seat.duda .n{font-size:16px}
+.caio .back,.duda .back{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;max-width:70px}
+.caio .back span,.duda .back span{width:16px;height:34px;transform:none}
+.mesa{height:100%;min-height:0;padding:12px}
+.feltro{height:100%;min-height:0;display:block}
+.table-viewport{position:absolute;inset:34px;overflow:auto;scrollbar-width:none;overscroll-behavior:contain;border-radius:8px}
+.table-viewport::-webkit-scrollbar{display:none}
+.table-content{width:max(100%,720px);min-height:100%;display:flex;align-items:center}
+.cadeia{flex-wrap:wrap;justify-content:center;width:100%;padding:24px;gap:20px 6px}
+.table-arrow{position:absolute;z-index:6;width:30px;height:30px;padding:0;border:1px solid var(--latao);border-radius:50%;background:#201b12eF;color:var(--marfim);font-size:20px;cursor:pointer;display:grid;place-items:center}
+.table-arrow:disabled{opacity:.25;cursor:default}
+.table-arrow.up{top:2px;left:calc(50% - 15px)}
+.table-arrow.down{bottom:2px;left:calc(50% - 15px)}
+.table-arrow.left{left:2px;top:calc(50% - 15px)}
+.table-arrow.right{right:2px;top:calc(50% - 15px)}
+.mao{flex:none;height:calc(var(--h) + 42px);min-height:0;margin-top:4px;padding-top:30px;padding-bottom:8px;flex-wrap:nowrap}
+.rodape{flex:none;min-height:32px;margin-top:4px;padding-top:6px;font-size:12px;gap:8px}
+.rodape span{flex:1;min-width:0;overflow-wrap:anywhere}
+.rodape button{padding:5px 10px}
+@media(max-width:700px){
+ .wrap{padding:10px;--w:clamp(24px,min(7vw,5vh),34px)}
+ .top{gap:8px;margin-bottom:8px}.top h1{font-size:18px}.rodada b{font-size:22px}
+ .placar{order:5;width:100%;gap:10px}.lado b{font-size:22px}.lado small{font-size:11px}.barras{gap:4px}.bar{height:5px}.barras em{font-size:10px}
+ .arena{grid-template-columns:50px minmax(0,1fr) 50px;grid-template-areas:'bia bia bia' 'caio mesa duda';grid-template-rows:auto minmax(0,1fr);gap:6px}
+ .mesa{padding:6px;border-radius:18px}.feltro{border-radius:12px;min-height:0}
+ .seat.caio .n,.seat.duda .n{font-size:13px}.seat small{font-size:10px}
+ .caio .back,.duda .back{max-width:38px;gap:3px}.caio .back span,.duda .back span{width:13px;height:28px}
+ .table-viewport{inset:30px}.table-arrow{width:26px;height:26px;font-size:18px}
+ .table-arrow.up,.table-arrow.down{left:calc(50% - 13px)}.table-arrow.left,.table-arrow.right{top:calc(50% - 13px)}
+ .table-content{width:max(100%,540px)}
+ .mao{margin-top:2px;height:calc(var(--h) + 36px)}
+}
+@media(max-height:550px){
+ .wrap{padding:6px 12px;--w:24px}.top{margin-bottom:4px;gap:8px}.top h1{font-size:16px}.rodada b,.lado b{font-size:18px}
+ .placar{order:initial;width:auto;min-width:160px}.barras em{display:none}
+ .seat.bia{gap:8px}.seat.bia .back span{height:18px;width:10px}
+ .arena{gap:4px}.mao{height:calc(var(--h) + 26px);padding-top:20px}.mao button:not(.no):hover,.mao button.sel{transform:translateY(-12px) rotate(0deg)!important}
+ .rodape{font-size:10px;min-height:26px}.rodape button{font-size:11px;padding:3px 8px}
+}
+
+.rodape{border-top:0;justify-content:flex-end}
+
