@@ -131,7 +131,7 @@ export default function App() {
       <span style={{"fontSize":"20px","fontWeight":"700","color":"#e2b54a"}}>Ponta de Cinco</span>
     </div>
     <div style={{"display":"flex","alignItems":"center","gap":"16px","flexWrap":"wrap"}}>
-      <div className="round-status"><span className="round-kicker">PARTIDA EM ANDAMENTO</span><strong>Rodada <span>03</span></strong><span className="round-goal">Meta · 50 pontos</span></div>
+      <div className="round-status"><span className="round-kicker">RODADA</span><strong>03</strong><span className="round-goal">de 05 · até 50 pontos</span></div>
       <button type="button" className="ghostbtn">Regras</button>
       <button type="button" className="ghostbtn" onClick={resetDemo}>Reiniciar demo</button>
     </div>
@@ -145,7 +145,7 @@ export default function App() {
         {opps.map((o) => <div className={`player-card ${o.team}`} key={o.name}>
           <div className={`av ${o.team} ${o.name === "Bia" ? "partner" : ""}`}>{o.init}</div>
           <div className="player-details"><strong>{o.name}</strong><span>{o.count} peças</span></div>
-          <span className="player-team">{o.team === "us" ? "Sua dupla" : "Adversário"}</span>
+          
         </div>)}
       </div>
 
@@ -225,38 +225,39 @@ export default function App() {
 
     <aside style={{"flex":"1 1 300px","maxWidth":"360px","display":"flex","flexDirection":"column","gap":"16px"}}>
       <div className="panel score-panel">
-        <div className="score-heading"><div><span className="score-eyebrow">DISPUTA ATUAL</span><h2 className="h2">Placar</h2></div><span className="score-target">Meta <b>50</b></span></div>
-        <div className="score-matchup">
-          <div className="score-team us"><span className="score-team-label">NÓS</span><strong className="score-number">{myScore}</strong><span className="score-members">Você + Bia</span></div>
-          <span className="score-versus">VS</span>
-          <div className="score-team them"><span className="score-team-label">ELES</span><strong className="score-number">14</strong><span className="score-members">Caio + Duda</span></div>
+        <div className="score-heading"><h2 className="h2">Placar</h2><span className="score-target">Primeiro a 50</span></div>
+        <div className="score-simple">
+          <div className="score-simple-team us"><span>Nós <small>Você e Bia</small></span><strong>{myScore}</strong></div>
+          <div className="score-divider"></div>
+          <div className="score-simple-team them"><span>Eles <small>Caio e Duda</small></span><strong>14</strong></div>
         </div>
-        <div className="score-race"><div className="score-race-track"><span className="score-race-us" style={{width:`${Math.min(100,myScore / 50 * 100)}%`}}></span><span className="score-race-them" style={{width:"28%"}}></span></div><div className="score-race-footer"><span>Progresso até a vitória</span><b>{Math.max(0,50 - myScore)} pontos restantes</b></div></div>
+        <div className="score-progress"><span style={{width:`${Math.min(100,myScore / 50 * 100)}%`}}></span></div>
+        <div className="score-bottom"><span>Sua dupla</span><span>{Math.max(0,50-myScore)} para vencer</span></div>
       </div>
 
       <div className="panel history-panel" style={{"flex":"1"}}>
         <h2 className="h2" style={{"marginBottom":"8px"}}>Últimas jogadas</h2>
-        {played.slice().reverse().map((p,i) => <div className="row" key={p.id + i}><div><div style={{"fontWeight":"500"}}>Você jogou {p.a}|{p.b}</div><div className="muted">{p.side} · Demonstração</div></div><span className={p.pts ? "badge good" : "badge none"}>{p.pts ? `+${p.pts} Nós` : "sem ponto"}</span></div>)}
+        {played.slice().reverse().map((p,i) => <div className="row" key={p.id + i}><div><div style={{"fontWeight":"500"}}>Você jogou {p.a}|{p.b}</div><div className="muted">{p.side} · Demonstração</div></div><span className={p.pts ? "history-points" : "history-points none"}>{p.pts ? `+${p.pts}` : "—"}</span></div>)}
         <div className="row">
           <div>
             <div style={{"fontWeight":"500"}}>Duda jogou 4|4</div>
             <div className="muted">6 + 4 = 10 · 10 ÷ 5 = 2</div>
           </div>
-          <span className="badge good">+2 Eles</span>
+          <span className="history-points opponent">+2</span>
         </div>
         <div className="row">
           <div>
             <div style={{"fontWeight":"500"}}>Bia jogou 6|4</div>
             <div className="muted">6 + 4 = 10 · 10 ÷ 5 = 2</div>
           </div>
-          <span className="badge good">+2 Nós</span>
+          <span className="history-points">+2</span>
         </div>
         <div className="row">
           <div>
             <div style={{"fontWeight":"500"}}>Caio jogou 2|5</div>
             <div className="muted">6 + 5 = 11 · não divide por 5</div>
           </div>
-          <span className="badge none">sem ponto</span>
+          <span className="history-points none">—</span>
         </div>
       </div>
     </aside>
